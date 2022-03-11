@@ -2,29 +2,29 @@
 using namespace std;
 
 /* Declare a global vector of SportsPlayer type.
-In ths vector example, we will add information provided from python.
+* In ths vector example, we will add information provided from python.
 */
 std::vector<SportsPlayer<std::string>> PlayersList;
 
 
 /*
-This API has been implemented, based on the data used in python.
-If user wants to play with data in python, then this API should be modify accordingly.
+* This API has been implemented, based on the data used in python.
+* If user wants to play with data in python, then this API should be modify accordingly.
 
-User should send the below format only from python or else program will throw exception
-{"player name": "R Jadeja", "sports type": "Cricket", "player age": 33}
+* User should send the below format only from python or else program will throw exception
+* {"player name": "R Jadeja", "sports type": "Cricket", "player age": 33}
 */
 template <typename T>
 void SportsPlayer<T>::addPlayers(py::dict playerProfile)
 {
     /*
-    playerProfile.contains -> Check if the given item is contained within this object, i.e. item in obj.
-    In this example it is used to check whether the dict key is present or not
-    it will return false if not present.
+    * playerProfile.contains -> Check if the given item is contained within this object, i.e. item in obj.
+    * In this example it is used to check whether the dict key is present or not
+    * it will return false if not present.
 
-    .cast<>() or py::cast() -> In this kind of mixed code,
-    it is often necessary to convert arbitrary C++ types to Python and vice versa.
-    When conversion fails, both directions throw the exception cast_error.
+    * .cast<>() or py::cast() -> In this kind of mixed code,
+    * it is often necessary to convert arbitrary C++ types to Python and vice versa.
+    * When conversion fails, both directions throw the exception cast_error.
     */
     if(playerProfile.contains(py::str("player name")) &&
     playerProfile.contains(py::str("sports type")) &&
@@ -35,11 +35,11 @@ void SportsPlayer<T>::addPlayers(py::dict playerProfile)
         std::string l_sType = playerProfile["sports type"].cast<py::str>();
         int l_pAge = playerProfile["player age"].cast<int>();
 
-        // create temp object of SportsPlayer with the data coming from python
+        // create temp object of SportsPlayer from the data coming from python
         SportsPlayer<std::string> l_temp{l_pName,l_sType,l_pAge};
 
         /*Adding player information to global object
-        later we will retrieve and send back to python */
+        * later we will retrieve and send back to python */
         PlayersList.push_back(l_temp);
         std::cout << "Player " + l_pName + " added successfully" << std::endl;
     }
@@ -48,7 +48,7 @@ void SportsPlayer<T>::addPlayers(py::dict playerProfile)
 }
 
 /* The list basically return player information as dictionary
-    see call_sports_player() function in python_ex.py file */
+   * see call_sports_player() function in python_ex.py file */
 template <typename T>
 py::list SportsPlayer<T>::getPlayersList()
 {
@@ -71,46 +71,43 @@ py::list SportsPlayer<T>::getPlayersList()
 }
 
 /*
-The motivation to write this function is to provide example of different
-pybind11 datatypes.
+* The motivation to write this function is to provide example of different
+* pybind11 datatypes.
 
-Function multipleArgsFunction - It will take args as 2d numpy array
-, user defined python class as object
-,and tuple data
-Return -
-We will convert inputs from python to c++ and
-vice versa conversion will send back to python using tuple.
-
-*/
-
-/*
-reference - https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#arrays
-
-py::array_t ->
-By using py::array,we can restrict the function so that it only accepts NumPy arrays
-(rather than any type of Python object satisfying the buffer protocol).
-In many situations, we want to define a function which only accepts a NumPy array of a certain data type.
-This is possible via the py::array_t<T> template.
-For instance, the following below function requires the argument to be a NumPy 2D array
-containing unsigned char values.
-********************************************************************************************************
-py::array::c_style -> It can be useful to require a function to only
-accept arrays using the C (row-major) , it is used to tell the pybind library
-to store multidimensional arrays in linear storage.
-********************************************************************************************************
-py::array::forcecast -> Force a cast to the output type even if it cannot be done safely.
-Without this flag, a data cast will occur only if it can be done safely, otherwise an error is raised.
-The py::array::forcecast argument is the default value of the second template parameter.
+* Function multipleArgsFunction - It will take args as 2d numpy array
+* , user defined python class as object
+* ,and tuple data
+* Return -
+* We will convert inputs from python to c++ and
+* vice versa conversion will send back to python using tuple.
 ********************************************************************************************************
 
- py::object, py::tuple -> pybind11's C++ object wrappers around Python types.
-*/
+* reference - https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#arrays
 
-/*
-*This function is only called in one place (the PYBIND11_MODULE block),
-*we didn’t create a header for the declaration of multipleArgsFunction.
-*That means we need to make sure the names and signatures exactly match,
-*because errors will only be caught by the linker (not the compiler),
+* py::array_t ->
+* By using py::array,we can restrict the function so that it only accepts NumPy arrays
+* (rather than any type of Python object satisfying the buffer protocol).
+* In many situations, we want to define a function which only accepts a NumPy array of a certain data type.
+* This is possible via the py::array_t<T> template.
+* For instance, the following below function requires the argument to be a NumPy 2D array
+* containing unsigned char values.
+********************************************************************************************************
+* py::array::c_style -> It can be useful to require a function to only
+* accept arrays using the C (row-major) , it is used to tell the pybind library
+* to store multidimensional arrays in linear storage.
+********************************************************************************************************
+* py::array::forcecast -> Force a cast to the output type even if it cannot be done safely.
+* Without this flag, a data cast will occur only if it can be done safely, otherwise an error is raised.
+* The py::array::forcecast argument is the default value of the second template parameter.
+********************************************************************************************************
+
+* py::object, py::tuple -> pybind11's C++ object wrappers around Python types.
+********************************************************************************************************
+
+* This function is only called in one place (the PYBIND11_MODULE block),
+* we didn’t create a header for the declaration of multipleArgsFunction.
+* That means we need to make sure the names and signatures exactly match,
+* because errors will only be caught by the linker (not the compiler),
 * and linker error messages can be quite cryptic.
 */
 template <typename T>
